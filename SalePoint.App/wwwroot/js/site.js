@@ -1,4 +1,4 @@
-﻿$(() => {
+﻿$(() => { 
     setInterval(() => {   
         const url = new URL(`${window.location.origin}/Home/RefreshSession`);
 

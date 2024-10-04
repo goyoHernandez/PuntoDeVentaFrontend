@@ -1,0 +1,187 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="~/css/Pharmacy/cash_register.css">
+
+<div class="card text-center mt-3">
+    <div class="card-header bg-dark text-white">
+        <h3>Corte de caja</h3>
+    </div>
+    <div class="card-body">
+        @*<div class=" row mb-2">
+        <div class="col col-lg-12 d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" id="btnNewCashRegister">
+        <i class="fa-solid fa-plus"></i> Nueva caja
+        </button>
+        </div>
+        </div>*@
+        <div class="row mt-3">
+            <table id="tableCashRegister" class="display striped row-border order-column nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>No. Caja</th>
+                        <th>Usuario</th>
+                        <th>Id Estatus</th>
+                        <th>Estatus</th>
+                        <th>Monto inicial</th>
+                        <th>Monto final</th>
+                        <th>Ganancia</th>
+                        <th>Monto de retiro</th>
+                        <th>Monto de ingreso</th>
+                        <th>Inicio de turno</th>
+                        <th>Fin de turno</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal CashWithdrawal -->
+<div class="modal fade" id="modalCashWithdrawal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center">Retiro de efectivo</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col col-lg-12">
+                    <h6>En caja</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fa-solid fa-sack-dollar"></i></span>
+                        <input type="number" class="form-control" placeholder="" value="" disabled="" id="actuallyAmount">
+                    </div>
+                </div>
+                <div class="col col-lg-12">
+                    <h6>Monto de retiro</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                        <input type="number" class="form-control" placeholder="" value="" id="withdrawalAmount">
+                    </div>
+                </div>
+                <div class="col col-lg-12">
+                    <div class="form-floating">
+                        <textarea class="form-control" id="reasonWithdrawal" maxlength="100"></textarea>
+                        <label>Motivo del retiro de efectivo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnApplyCashWithdrawal">Aceptar</button>
+            </div>
+            <input type="hidden" id="boxCutId" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- Modal CashIncome -->
+<div class="modal fade" id="modalCashIncome" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center">Ingresos de efectivo</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col col-lg-12">
+                    <h6>En caja</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fa-solid fa-sack-dollar"></i></span>
+                        <input type="number" class="form-control" placeholder="" value="" disabled="" id="actuallyAmountCashIncome">
+                    </div>
+                </div>
+                <div class="col col-lg-12">
+                    <h6>Monto de ingreso</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                        <input type="number" class="form-control" placeholder="" value="" id="cashIncome">
+                    </div>
+                </div>
+                <div class="col col-lg-12">
+                    <div class="form-floating">
+                        <textarea class="form-control" id="reasonCashIncome" maxlength="100"></textarea>
+                        <label>Motivo del ingreso de efectivo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnApplyCashIncome">Aceptar</button>
+            </div>
+            <input type="hidden" id="boxCutId" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- Modal CashFlowsDetail -->
+<div class="modal fade" id="modalCashFlowsDetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center" id="titleCashFlowsDetail">Retiros de efectivo</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col col-lg-2">Id Caja</div>
+                                <div class="col col-lg-3">Importe</div>
+                                <div class="col col-lg-4">Motivo</div>
+                                <div class="col col-lg-3">Fecha</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="sectionCashFlowsDetail"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal ProductReturnsDetail -->
+<div class="modal fade" id="modalProductReturnsDetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center">Productos devueltos</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <table id="tableProductReturns" class="display striped row-border order-column nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>No Venta</th>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Unidad.</th>
+                                <th>Precio venta.</th>
+                                <th>Ganancia.</th>
+                                <th>Venta</th>
+                                <th>Importe</th>
+                                <th>Vendio</th>
+                                <th>Fecha venta</th>
+                                <th>Devolvio</th>
+                                <th>Fecha devolución</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Pharmacy/cashRegister.js"></script>
+<script src="~/js/languageDatatable.js"></script>

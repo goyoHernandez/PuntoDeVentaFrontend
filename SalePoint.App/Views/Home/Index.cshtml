@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row" id="homeSalePoint">
+    <div class="col col-lg-12">
+        <div class="card text-center mt-3">
+            <div class="card-header bg-dark text-white">
+                <h3>Productos por expirar</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mt-3">
+                    <table id="tableExpiringSoonProducts" class="table table-striped nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Producto</th>
+                                <th>Caducidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="product in listExpiredProducts">
+                                <td class="center-td">
+                                    {{product.barCode}}
+                                </td>
+                                <td class="center-td">
+                                    {{product.name}} {{product.description}}
+                                </td>
+                                <td class="center-td">
+                                    {{product.expirationDate}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center m-3" v-if="listExpiredProducts.length == 0">
+                    @*  <a v-if="paginasTotales > 0" v-for="pagina in paginasTotales" :id="'NoPag' + pagina" :key="pagina" :class="{ 'boton_paginado': true, 'actual': pagina === paginaActual }" v-on:click="cambiaPagina(pagina)">
+                    {{ pagina }}
+                    </a> *@
+                    <p>
+                        No se encontraron resultados
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col col-lg-12">
+        <div class="card text-center mt-3">
+            <div class="card-header bg-dark text-white">
+                <h3>Productos por terminarse</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mt-3">
+                    <table id="tableProductsNearCompletition" class="display striped row-border order-column nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="product in listMissingProducts">
+                                <td class="center-td">
+                                    {{product.barCode}}
+                                </td>
+                                <td class="center-td">
+                                    {{product.name}} {{product.description}}
+                                </td>
+                                <td class="center-td">
+                                    {{product.stock}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center m-3" v-if="listMissingProducts.length == 0">
+                    @*  <a v-if="paginasTotales > 0" v-for="pagina in paginasTotales" :id="'NoPag' + pagina" :key="pagina" :class="{ 'boton_paginado': true, 'actual': pagina === paginaActual }" v-on:click="cambiaPagina(pagina)">
+                    {{ pagina }}
+                    </a> *@
+                    <p>
+                        No se encontraron resultados
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @* <script src="~/js/home.js"></script> *@
+    <script src="~/js/Components/Home/expiredProductsVue.js"></script>
+}

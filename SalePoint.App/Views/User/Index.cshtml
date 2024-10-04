@@ -1,0 +1,117 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card text-center mt-3">
+    <div class="card-header bg-dark text-white">
+        <div class="row d-flex">
+            <h3>Usuarios</h3>
+            <i class="fa-solid fa-users"></i>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class=" row mb-2">
+            <div class="col col-lg-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-primary" id="btnCreateUser">
+                    <i class="fa-solid fa-plus"></i> Nuevo usuario
+                </button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <table id="tableUsers" class="display striped row-border order-column nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Edad</th>
+                        <th>Dirección</th>
+                        <th>Celular</th>
+                        <th>Descripción</th>
+                        <th>Rol</th>
+                        <th>Nombre usuario</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="userModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="titleUserModal"></h5>
+            </div>
+            <div class="modal-body">
+
+                <div class="row d-flex">
+                    <div class="col col-lg-6 mb-2">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                    <div class="col col-lg-6 mb-2">
+                        <label class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" id="lastName">
+                    </div>
+                </div>
+
+                <div class="row d-flex">
+                    <div class="col col-lg-6 mb-2">
+                        <label class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="age" min="15">
+                    </div>
+                    <div class="col col-lg-6 mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="address">
+                    </div>
+                </div>
+
+                <div class="row d-flex">
+                    <div class="col col-lg-6 mb-2">
+                        <label class="form-label">Celular</label>
+                        <input type="text" class="form-control" id="cellPhone" maxlength="10">
+                    </div>
+                    <div class="col col-lg-6 mb-2">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="description" maxlength="100">
+                    </div>
+                </div>
+
+                <div class="row d-flex">
+                    <div class="col col-lg-6">
+                        <label class="form-label">Nombre usuario</label>
+                        <input type="text" class="form-control" id="userName" maxlength="20">
+                    </div>
+                    <div class="col col-lg-6">
+                        <label class="form-label">Contraseña</label>
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" id="pass" maxlength="20">
+                            <span class="input-group-text">
+                                <i class="fa fa-eye-slash" id="showPassword" style="cursor: pointer"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col col-lg-6">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select" id="rol"></select>
+                    </div>
+                    <div class="col col-lg-12">
+                        <input type="hidden" id="userId" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCloseUserModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnSaveUser" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="userIdLogged" value="@ViewBag.UserId" />
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Pharmacy/user.js"></script>
+<script src="~/js/languageDatatable.js"></script>

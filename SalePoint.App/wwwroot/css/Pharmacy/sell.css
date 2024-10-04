@@ -1,0 +1,7 @@
+﻿.pointer {
+    cursor: pointer;
+}
+
+.row_selected td {
+    background-color: lightblue !important; /* Add !important to make sure override datables base styles */
+}

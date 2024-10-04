@@ -1,0 +1,551 @@
+﻿<style scoped>
+    .content-image-product {
+        max-width: 150px;
+        overflow: hidden;
+    }
+
+    .content-image-product-modal {
+        width: 12vw;
+        height: 15vh;
+        overflow: hidden;
+    }
+
+    .img-product {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .imagen-curso-preview {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        border: 1px solid #ededed;
+        border-radius: .375rem;
+        overflow: hidden;
+    }
+
+    .icono-carga-imagen {
+        padding: 30%;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: .5;
+    }
+
+    .cursor-no-permitido {
+        cursor: not-allowed !important;
+    }
+</style>
+<div class="card text-center mt-3" id="inventory">
+    <div class="card-header bg-dark text-white">
+        <h3>Inventario</h3>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row mt-1 d-flex">                
+                <div class="col-auto">
+                    <button type="button" class="btn btn-success" id="btnDownloadInventory" @@click="downloadInventory">
+                        <i class="fa-solid fa-file-excel"></i> Descargar inventario
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-secondary" id="btnUploadUpgradeInventory" @@click="uploadUpgradeInventory">
+                        <i class="fa-solid fa-file-arrow-up"></i> Actualizar inventario
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button 
+                        type="button"
+                        class="btn btn-primary" 
+                        id="btnCreateProduct"
+                        :disabled="!filters?.totalPage || filters?.totalPage < 1"
+                        @@click="openModalNewProduct">
+                        <i class="fa-solid fa-plus"></i> Nuevo producto
+                    </button>
+                </div>
+                <div class="col-lg-4">
+                    <div class="input-group mb-3">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Buqueda por nombre, descripción o codigo"
+                               id="textSearchProduct"
+                               v-model="textKeyWord"
+                               v-on:keyup="searchProduct"
+                               @@change="getProducts">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-1 p-2">
+            <table class="table table-striped" width="100%">
+                <thead class="table-dark">
+                    <tr>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Codigo</th>
+                        <th>Caducidad</th>
+                        <th>Existencias</th>
+                        <th>Precio de compra</th>
+                        <th>Precio de venta</th>
+                        <th>Accion</th>
+                        @* <th colspan="5">Desc.</th> *@
+                        @* <th>Unidad de Medida</th> *@
+                        @* <th>Existencia minima</th> *@
+                        @* <th>% de utilidad</th> *@
+                        @* <th>Ganancia</th> *@
+                        @* <th>Precio de venta mayoreo</th>
+                        <th>% de utilidad</th>
+                        <th>Ganancia</th>
+                        <th>A partir de</th> *@
+                        @* <th>Departamento</th> *@
+                    </tr>
+                </thead>
+                <tbody id="tblProducts" style="text-align: justify;">
+                    <tr v-for="product in listProducts" class="align-middle">
+                        <td>
+                            <div class="content-image-product">
+                                <img class="img-circle img-thumbnail img-product" :src="product.routeImage" alt="Imagen del producto" v-if="product.routeImage" />
+                                <img v-else class="img-circle img-thumbnail img-product" src="~/images/emptyProduct.png" alt="Imagen del producto" />
+                            </div>
+                        </td>
+                        <td>
+                            {{product.nameProduct}} {{product.description}}
+                        </td>
+                        <td>
+                            {{product.barCode}}
+                        </td>
+                        <td>
+                            {{product.expirationDate == null ? '' : new Date(product.expirationDate).toLocaleDateString()}}
+                        </td>
+                        <td>
+                            {{product.stock}}
+                        </td>
+                        <td>
+                            {{ formatCurrency(product.purchasePrice) }}
+                        </td>
+                        <td>
+                            {{ formatCurrency(product.salesPrice1) }}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <div class="dropdown dropend">
+                                    <div type="button" id="menuProduct" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="cursor-pointer fa-solid fa-ellipsis-vertical ColorLink fs-4"></i>
+                                    </div>
+                                    <ul class="dropdown-menu" aria-labelledby="menuProduct">
+                                        <li class="cursor-pointer" @@click="getProductById(product.productId)">
+                                            <div class="dropdown-item">
+                                                Actualizar
+                                            </div>
+                                        </li>
+                                        <li class="cursor-pointer" @@click="openModalAddStockProduct(product)">
+                                            <div class="dropdown-item">
+                                                Agregar existencias
+                                            </div>
+                                        </li>
+                                        <li class="cursor-pointer" @@click="openModalDeleteProduct(product.productId)">
+                                            <div class="dropdown-item">
+                                                Eliminar
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+                <button v-if="paginationPages.length > 0 && listProducts.length > 0"
+                        v-for="page in paginationPages"
+                        :key="page"
+                        :class="
+                     ['btn me-2',
+                         { 'btn-outline-dark': page !== filters.pageNumber,
+                           'btn-dark': page === filters.pageNumber,
+                           'disabled': page === '...'
+                          }
+                      ]"
+                        v-on:click="changePage(page)"
+                        :disabled="page == '...'">
+                    {{ page }}
+                </button>
+                <p v-if="listProducts.length == 0">
+                    No se encontraron resultados
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="titleProductModal">{{ titleProductModal }}</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row pt-4 d-flex justify-content-center">
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="mb-1">
+                                <txt5 class="flexa-standard-medium">
+                                    Imagen del producto
+                                </txt5>
+                            </div>
+                            <div :class="{
+                                         'card': true,
+                                         'cursor-no-permitido': processingSavingProduct
+                                         }"
+                                 @@dragover.prevent
+                                 @@dragenter.prevent
+                                 @@drop.prevent="dropImage"
+                                 @@click="()=> { processingSavingProduct ? null : $('#rutaImagen').click(); }"
+                                 style="border: 2px dashed #ccc;">
+                                <input id="rutaImagen" type="file" class="form-control flexa-standard-medium d-none" accept="image/png" v-on:change="selectedImage($event)">
+                                <div :class="
+                                             {
+                                               'card-body': true,
+                                               'd-flex': true,
+                                               'flex-column': true,
+                                               'align-items-center': true,
+                                               'pe-none': processingSavingProduct
+                                             }
+                                             "
+                                     style="color: #ccc;">
+                                    <div v-if="loadingPreview">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                    </div>
+                                    <div v-else-if="!imageProduct && !product.routeImage">
+                                        <div class="col-12 pb-2 d-flex flex-column cursor-pointer text-center">
+                                            <i class="fa-solid fa-download pb-2"></i>
+                                            <txt4 class="flexa-standard-medium">
+                                                Selecciona una imagen o arrastra aqui
+                                            </txt4>
+                                            <txt4 class="flexa-standard-medium">
+                                                PGN Máximo 5 MB
+                                            </txt4>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-center">
+                                        <div class="content-image-product-modal">
+                                            <div class="imagen-curso-preview" id="imagenPrevia" :style="imagePreviewStyle"></div>
+                                        </div>
+                                        <div :class="{
+                                                     'cursor-pointer': true,
+                                                     'size12': true,
+                                                     'pt-2': true
+                                                     }
+                                                     "
+                                             @@click.stop="deletePreviewImage()">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @* <div class="col-lg-6" v-if="product && product.id > 0">
+                        <div class="mb-1">
+                        <txt5 class="flexa-standard-medium">
+                        Ruta Imagen
+                        </txt5>
+                        </div>
+                        <div class="input-group">
+                        <input type="text"
+                        :value="product.thumbnailBase64 && product.thumbnailBase64 !== '' ? product.thumbnailBase64 : (imageProduct && imageProduct.name ? imageProduct.name : '')"
+                        class="form-control flexa-standard-medium"
+                        readonly disabled>
+                        <button type="button"
+                        class="btn btn-primary flexa-standard-regular input-group-text"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="Copiar ruta"
+                        v-on:click="navigator.clipboard.writeText(product.thumbnailBase64 && product.thumbnailBase64 != '' ? product.thumbnailBase64 : imageProduct != '' ?  imageProduct.name : '')">
+                        <i class="fa-regular fa-copy"></i>
+                        </button>
+                        </div>
+                        </div> *@
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nameProduct" v-model="product.name" placeholder="Nombre" />
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="description" v-model="product.description" placeholder="Descripción" />
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Codigó de barras</label>
+                            <input type="text" class="form-control" id="barCode" v-model="product.barCode" placeholder="Codigo de barras" />
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Fecha de caducidad</label>
+                            <input type="date" class="form-control" id="expirationDate" placeholder="Fecha de caducidad" :value="formatDate(product.expirationDate)" @@input="updateExpirationDate($event.target.value)" />
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Departamento</label>
+                            <select class="form-select" id="department">
+                                <option selected value="0">
+                                    Seleccionar
+                                </option>
+                                <option v-for="department in listDepartments" :value="department.id">
+                                    {{ department.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Unidad de medida</label>
+                            <select class="form-select" id="measurementUnit">
+                                <option selected value="0">
+                                    Seleccionar
+                                </option>
+                                <option v-for="measurementUnit in listMeasurementUnits" :value="measurementUnit.id">
+                                    {{ measurementUnit.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="stock" v-model="product.stock" placeholder="Cantidad" />
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Cantidad minima</label>
+                            <input type="number" class="form-control" id="minimumStock" v-model="product.minimumStock" placeholder="Cantidad minima" @@focusout="validateMinimumStock($event)" />
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Precio de compra</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-secondary text-white">$</span>
+                                <input type="number" class="form-control" id="purchasePrice" v-model="product.purchasePrice" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Precio de venta</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-secondary text-white">$</span>
+                                <input type="number" class="form-control" id="salesPrice1" v-model="salesPrice" @@keyup="roundedSalesPrice1($event)" />
+                            </div>
+                        </div>
+                        <div class="col col-lg-4 mb-2">
+                            <label class="form-label">Porcentaje de utilidad</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="percentageProfit1" min="1" max="99" maxlength="2" v-model="percentageProfit" @@keyup="validatePercentageProfit($event)" />
+                                <span class="input-group-text bg-secondary text-white">%</span>
+                            </div>
+                        </div>
+                        <div class="col col-lg-2 mb-2">
+                            <label class="form-label">Ganancia</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-secondary text-white">$</span>
+                                <input type="number" class="form-control" id="revenue1" disabled v-model="revenue" />
+                            </div>
+                        </div>
+                        <div class="col col-lg-2 mb-2">
+                            <label class="form-label">A partir de</label>
+                            <input type="number" class="form-control" id="wholesale1" value="1" disabled />
+                        </div>
+                    </div>
+
+                    @* <div class="row d-flex">
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nameProduct" v-model="product.name" />
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" class="form-control" id="description" v-model="product.description" />
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Código de barras</label>
+                    <input type="text" class="form-control" id="barCode" v-model="product.barCode" />
+                    </div>
+                    </div> *@
+
+                    @* <div class="row d-flex">
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Caducidad</label>
+                    <input type="date" class="form-control" id="expirationDate" :value="formatDate(product.expirationDate)" @@input="updateExpirationDate($event.target.value)" />
+                    </div>
+                    <div class="col col-lg-4">
+                    <label class="form-label">Departamento</label>
+                    <select class="form-select" id="department">
+                    <option selected value="0">
+                    Seleccionar
+                    </option>
+                    <option v-for="department in listDepartments" :value="department.id">
+                    {{ department.name }}
+                    </option>
+                    </select>
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Unidad de medida</label>
+                    <select class="form-select" id="measurementUnit">
+                    <option selected value="0">
+                    Seleccionar
+                    </option>
+                    <option v-for="measurementUnit in listMeasurementUnits" :value="measurementUnit.id">
+                    {{ measurementUnit.name }}
+                    </option>
+                    </select>
+                    </div>
+                    </div> *@
+
+                    @* <div class="row d-flex">
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Existencias</label>
+                    <input type="number" class="form-control" id="stock" v-model="product.stock" />
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Existencia minima</label>
+                    <input type="number" class="form-control" id="minimumStock" v-model="product.minimumStock" />
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Precio de compra</label>
+                    <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">$</span>
+                    <input type="number" class="form-control" id="purchasePrice" v-model="product.purchasePrice" />
+                    </div>
+                    </div>
+                    </div> *@
+
+                    @* <div class="row d-flex">
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Precio de venta</label>
+                    <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">$</span>
+                    <input type="number" class="form-control" id="salesPrice1" v-model="salesPrice" />
+                    </div>
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Porcentaje de utilidad</label>
+                    <div class="input-group">
+                    <input type="number" class="form-control" id="percentageProfit1" min="1" max="99" maxlength="2" v-model="percentageProfit" />
+                    <span class="input-group-text bg-secondary text-white">%</span>
+                    </div>
+                    </div>
+                    <div class="col col-lg-2 mb-2">
+                    <label class="form-label">Ganancia</label>
+                    <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">$</span>
+                    <input type="number" class="form-control" id="revenue1" disabled v-model="revenue" />
+                    </div>
+                    </div>
+                    <div class="col col-lg-2 mb-2">
+                    <label class="form-label">A partir de</label>
+                    <input type="number" class="form-control" id="wholesale1" value="1" disabled />
+                    </div>
+                    </div> *@
+                    @*
+                    <div class="row d-flex">
+                    <div class="col col-lg-12 mb-2">
+                    <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="applyWholesale" />
+                    <label class="form-check-label">
+                    Aplica venta de mayoreo
+                    </label>
+                    </div>
+                    </div>
+                    </div>
+
+                    <div class="row d-flex disabled-section" id="sectionWholesale">
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Precio de venta mayoreo</label>
+                    <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">$</span>
+                    <input type="number" class="form-control" id="salesPrice2" />
+                    </div>
+                    </div>
+                    <div class="col col-lg-4 mb-2">
+                    <label class="form-label">Porcentaje de utilidad</label>
+                    <div class="input-group">
+                    <input type="number" class="form-control" id="percentageProfit2" min="1" max="99" maxlength="2" />
+                    <span class="input-group-text bg-secondary text-white">%</span>
+                    </div>
+                    </div>
+                    <div class="col col-lg-2 mb-2">
+                    <label class="form-label">Ganancia</label>
+                    <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">$</span>
+                    <input type="number" class="form-control" id="revenue2" disabled />
+                    </div>
+                    </div>
+
+                    <div class="col col-lg-2 mb-2">
+                    <label class="form-label">A partir de</label>
+                    <input type="number" class="form-control" id="wholesale2" />
+                    </div>
+                    </div>
+
+                    <div class="row d-flex">
+                    <div class="col col-lg-12">
+                    <input type="hidden" id="creationDate" />
+                    <input type="hidden" id="modificationDate" />
+                    <input type="hidden" id="deletionDate" />
+                    <input type="hidden" id="userId" />
+                    <input type="hidden" id="isActive" value="1" />
+                    <input type="hidden" id="productId" value="0" />
+                    </div>
+                    </div> *@
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCloseProductModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnSaveProduct" class="btn btn-primary" v-on:click="saveProduct()">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Add Stock Product -->
+    <div class="modal fade" id="AddStockProductModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title text-center">Agregar existencias</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="nameStockProduct" class="fw-bold text-center"></p>
+
+                    <div class="col col-lg-12 mt-2">
+                        <h6>Cantidad actual</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-boxes-stacked"></i></span>
+                            <input type="number" class="form-control" :value="product.stock" disabled id="actuallyStockProduct" />
+                        </div>
+                    </div>
+                    <div class="col col-lg-12">
+                        <h6>Nueva cantidad</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-cubes-stacked"></i></span>
+                            <input type="number" class="form-control" v-model="newStockProduct" id="newStockProduct" @@keypress="handleKeyPressAddStock($event)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnAddStock" @@click="addStockProduct">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script src="~/js/Components/Inventory/productVue.js"></script>
+}
+
+@* <script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Pharmacy/product.js"></script>
+<script src="~/js/languageDatatable.js"></script> *@

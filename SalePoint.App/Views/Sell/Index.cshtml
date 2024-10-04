@@ -1,0 +1,197 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Pharmacy/sell.css">
+
+<div class="card text-center mt-3">
+    <div class="card-header bg-dark text-white">
+        <div class="row d-flex justify-content-around">
+            <div class="col col-lg-2">
+                <label class="pointer" id="btnSearchProduct">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Buscar
+                </label>
+            </div>
+            <div class="col col-lg-2">
+                <label class="pointer" id="btnClearSell">
+                    <i class="fa-solid fa-broom"></i>
+                    Limpiar
+                </label>
+            </div>
+            <div class="col col-lg-2">
+                <label class="pointer" id="btnCancelSale">
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancelar
+                </label>
+            </div>
+            <div class="col col-lg-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Escanear o ingresar codigo" id="txtBarCode" maxlength="20">
+                    <button class="btn btn-secondary" type="button" id="btnAddProduct">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <span class="badge bg-light text-dark mb-2" id="wholesaleApply">En la venta agranel se pueden utilizar decimales.</span>
+            <table id="tableSellProducts" class="display striped row-border order-column nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Caducidad</th>
+                        <th>Existencia</th>
+                        <th>Existencia minima</th>
+                        <th>Precio de compra</th>
+                        <th>Precio de venta menudeo</th>
+                        <th>Porcentaje de utilidad</th>
+                        <th>Ganancia</th>
+                        <th>Precio de venta mayoreo</th>
+                        <th>Porcentaje de utilidad</th>
+                        <th>Ganancia</th>
+                        <th>Apartir de</th>
+                        <th>Departamento</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
+                        <th>Precio unitario</th>
+                        <th>Importe</th>
+                        <th>Accion</th>
+                        <th>Id Producto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col col-lg-12 d-flex justify-content-end">
+                <div class="col col-lg-2 mt-2">
+                    <h5>Total</h5>
+                    <div class="input-group">
+                        <span class="input-group-text bg-secondary text-white">$</span>
+                        <input type="text" class="form-control" disabled value="" id="wholePurchase" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-lg-12">
+                <button class="btn btn-outline-dark btn-lg" id="btnChargeProducts">
+                    <i class="fa-solid fa-wallet"></i>
+                    Cobrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pagar -->
+<div class="modal fade" id="modalPayProducts" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center">Pagar Articulos</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col col-lg-4 text-center">
+                        <h6>Efectivo</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-money-bill-wave"></i></span>
+                            <input type="number" class="form-control" placeholder="Efectivo $$" id="txtCash" min="0">
+                        </div>
+                    </div>
+                    <div class="col col-lg-4 text-center">
+                        <h6>Importe a pagar</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-dollar-sign"></i></span>
+                            <input type="number" class="form-control" placeholder="" value="72.00" disabled="" id="txtAmountPayable">
+                        </div>
+                    </div>
+                    <div class="col col-lg-4 text-center">
+                        <h6>Cambio a entregar</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-dollar-sign"></i></span>
+                            <input type="number" class="form-control" placeholder="" value="" disabled="" id="txtMoneyChange">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnPayProductos" disabled="">Pagar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Buscar Productos -->
+<div class="modal fade" id="modalProducts" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center">Buscar Productos</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 d-flex justify-content-center">
+                    <span class="badge bg-light text-dark mb-2">Ingresa una palabra clave del producto que deseas buscar, el sistema buscara todas las coincidencias.</span>
+                    <div class="col col-lg-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Buscar por nombre o descripción" id="txtNameDescriptionProduct" maxlength="50">
+                            <button class="btn btn-outline-primary" type="button" id="btnSearchProductByNameDescription">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <table id="tableSearchProducts" class="display striped row-border order-column nowrap hover pointer" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Id Producto</th>
+                                <th>Articulo</th>
+                                <th>Caducidad</th>
+                                <th>Existencias</th>
+                                <th>Precio menudeo</th>
+                                <th>Precio mayoreo</th>
+                                <th>A partir de</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnAddProductToSale" disabled>Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal StartCashRegister -->
+<div class="modal fade" id="modalStartCashRegister" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="staticBackdropLabel">Iniciar turno para @ViewBag.UserName</h5>
+            </div>
+            <div class="modal-body">
+                <input type="number" class="form-control" placeholder="Monto inicial" id="initialAmount">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnStartCashRegister">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input hidden value=@ViewBag.UserName id="userName" />
+<input hidden value=@ViewBag.UserRol id="userRole" />
+<input hidden value=@ViewBag.UserId id="userId" />
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Pharmacy/sell.js"></script>
+<script src="~/js/languageDatatable.js"></script>

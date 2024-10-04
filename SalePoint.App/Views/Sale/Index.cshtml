@@ -1,0 +1,96 @@
+﻿@using Microsoft.AspNetCore.Identity;
+
+<div class="card text-center mt-3">
+    <div class="card-header bg-dark text-white">
+        <h3>Ventas</h3>
+    </div>
+    <div class="card-body">
+        @* @if (User.IsInRole("Administrador"))
+        {*@
+        <div class=" row mb-2">
+            <div class="col col-lg-5">
+                <div class="input-group input-group-sm mb-3">
+                    <span class="input-group-text">Fecha inicio</span>
+                    <input type="date" class="form-control" id="dateSaleStart" />
+                </div>
+            </div>
+            <div class="col col-lg-5">
+                <div class="input-group input-group-sm mb-3">
+                    <span class="input-group-text">Fecha fin</span>
+                    <input type="date" class="form-control" id="dateSaleEnd" />
+                </div>
+            </div>
+            <div class="col col-lg-2">
+                <button type="button" class="btn btn-primary" id="btnFilterDate">Aceptar</button>
+            </div>
+        </div>
+        @*}*@
+        <div class="row mt-3">
+            <table id="tableProductsSold" class="display striped row-border order-column nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>No. Venta</th>
+                        <th>No. Caja</th>
+                        <th>Id Producto </th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio de compra</th>
+                        <th>Precio menudeo</th>
+                        <th>Ganancia</th>
+                        <th>Precio mayoreo</th>
+                        <th>Ganancia</th>
+                        <th>A partir de</th>
+                        <th>Importe</th>
+                        <th>Unidad de medida Id</th>
+                        <th>Fecha</th>
+                        <th>Id Usuario</th>
+                        <th>Usuario</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalReturnNote" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title text-center">Nota por devolución</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col col-lg-12 mb-2">
+                    <h6>Producto</h6>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="nameProduct" value="" disabled>
+                    </div>
+                </div>
+                <div class="col col-lg-12 mb-2">
+                    <h6>Importe</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fa-solid fa-dollar-sign"></i></span>
+                        <input type="number" class="form-control" placeholder="" value="" disabled id="refundAmount">
+                    </div>
+                </div>
+                <div class="col col-lg-12">
+                    <h6>Cantidad</h6>
+                    <div class="input-group mb-3">
+                        <select class="form-control" id="quantity"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnApplyReimbursement">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="productReturns" />
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Pharmacy/sale.js"></script>
+<script src="~/js/languageDatatable.js"></script>

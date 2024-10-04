@@ -1,0 +1,191 @@
+﻿@using Microsoft.AspNetCore.Identity;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Punto de venta</title>
+
+    <!-- ✅ load Bootstrap bundle ✅ -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/datatables/datatables.min.css" />
+    <link rel="stylesheet" href="~/css/datatables/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/datatables/fixedColumns.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/datatables/responsive.bootstrap5.min.css" />
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="~/SalePoint.App.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css">
+
+    <link rel="stylesheet" href="~/fonts/fontawesome/css/all.css">
+    <link rel="stylesheet" href="~/fonts/fontawesome/js/all.js">
+    <link rel="stylesheet" href="~/fonts/poppins/poppins.css">
+    <script src="~/lib/assets/iframe/iframeConsoleRunner.js"></script>
+    <script src="~/lib/assets/iframe/iframeRefreshCSS.js"></script>
+    <script src="~/lib/assets/iframe/iframeRuntimeErrors.js"></script>
+
+</head>
+<body>
+    <div class="layout has-sidebar fixed-sidebar fixed-header">
+        <aside id="sidebar" class="sidebar break-point-sm has-bg-image collapsed">
+            <a id="btn-collapse" class="sidebar-collapser">
+                <i class="fa-solid fa-bars"></i>
+            </a>
+            <div class="sidebar-layout">
+                <div class="sidebar-header" style="margin-top: 35px;">
+                    <div class="pro-sidebar-logo">
+                        <a asp-controller="Home" asp-action="Index">
+                            <img id="companyLogo" src="" class="img-fluid" style="width:100px;">
+                        </a>
+                    </div>
+                </div>
+                <div class="sidebar-content">
+                    <nav class="menu open-current-submenu">
+                        <ul>
+                            <li class="menu-header visually-hidden">
+                                <span>
+                                    <strong>General</strong>
+                                </span>
+                            </li>
+                            <li class="menu-item">
+                                <a asp-controller="Sell" asp-action="Index">
+                                    <span class="menu-icon">
+                                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                                    </span>
+                                    <span class="menu-title">Vender</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a asp-controller="Sale" asp-action="Index">
+                                    <span class="menu-icon">
+                                        <i class="fa-solid fa-money-bill-trend-up"></i>
+                                    </span>
+                                    <span class="menu-title">Ventas</span>
+                                </a>
+                            </li>
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <li class="menu-item">
+                                    <a asp-controller="Product" asp-action="Index">
+                                        <span class="menu-icon">
+                                            <i class="fa-solid fa-dolly"></i>
+                                        </span>
+                                        <span class="menu-title">Productos</span>
+                                    </a>
+                                </li>
+                            }
+                            @*  @if (User.IsInRole("Administrador"))
+                            {
+                            <li class="menu-item">
+                            <a asp-controller="Ticket" asp-action="Index">
+                            <span class="menu-icon">
+                            <i class="fa-solid fa-ticket"></i>
+                            </span>
+                            <span class="menu-title">Ticket</span>
+                            </a>
+                            </li>
+                            } *@
+
+                            <li class="menu-item">
+                                <a asp-controller="CashRegister" asp-action="Index">
+                                    <span class="menu-icon">
+                                        <i class="fa-solid fa-cash-register"></i>
+                                    </span>
+                                    <span class="menu-title">Caja</span>
+                                </a>
+                            </li>
+
+                            @* @if (User.IsInRole("Administrador"))
+                            {
+                            <li class="menu-item">
+                            <a asp-controller="Report" asp-action="Index">
+                            <span class="menu-icon">
+                            <i class="fa-solid fa-file-pen"></i>
+                            </span>
+                            <span class="menu-title">Reportes</span>
+                            </a>
+                            </li>
+                            }*@
+
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <li class="menu-item">
+                                    <a asp-controller="User" asp-action="Index">
+                                        <span class="menu-icon">
+                                            <i class="fa-solid fa-users"></i>
+                                        </span>
+                                        <span class="menu-title">Usuarios</span>
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="menu-item">
+                                <a id="btnChangeLogo" class="cursor-pointer">
+                                    <span class="menu-icon">
+                                        <i class="fa-solid fa-gear"></i>
+                                    </span>
+                                    <span class="menu-title">Cambiar logo</span>
+                                </a>
+                            </li>
+
+                            <li class="menu-item">
+                                <a asp-controller="Login" asp-action="LogOut">
+                                    <span class="menu-icon">
+                                        <i class="fa-solid fa-power-off"></i>
+                                    </span>
+                                    <span class="menu-title">Cerrar sesión</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+        <div id="overlay" class="overlay"></div>
+        <div class="layout">
+            <main role="main" class="content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal loading -->
+    <div class="loading-page" id="loadingPage">
+        <div class="text-center" style="margin-top: 50vh;">
+            <i class="fa-solid fa-spinner fa-spin-pulse fa-2xl"></i>
+        </div>
+    </div>
+
+    <input type="file" class="form-control-file visually-hidden" id="uploadLogo" name="logo">
+
+    <!--- ✅ load Vue2 ✅ --->
+    <script src="~/lib/vue2/vue.min.js"></script>
+
+    <!-- ✅ load jQuery ✅ -->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <!-- ✅ load Bootstrap bundle ✅ -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/popper/popper.min.js"></script>
+
+    <!-- ✅ load DataTable ✅ -->
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/datatable/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatable/responsive.bootstrap5.min.js"></script>
+    <script src="~/lib/datatable/dataTables.fixedColumns.min.js"></script>
+    <script src="~/js/languageDatatable.js"></script>
+
+    <!-- ✅ load custom scripts -->
+    <script src="~/lib/assets/common/stopExecutionOnTimeout.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/sidebar.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

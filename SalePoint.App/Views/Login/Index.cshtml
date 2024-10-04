@@ -1,0 +1,62 @@
+﻿@model Access
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>LogIn</title>
+
+    <!-- ✅ load Bootstrap bundle ✅ -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+    <link rel="stylesheet" href="~/css/login.css" />
+    <link rel="stylesheet" href="~/fonts/fontawesome/css/all.css" />
+    <link rel="stylesheet" href="~/fonts/fontawesome/js/all.js" />
+</head>
+<body>
+    <div class="login-box">
+        <h2>Iniciar Sesión</h2>
+        <form id="formLogin">
+            <div class="user-box">
+                <input type="text" asp-for="UserName" autocomplete="off" id="userName">
+                <label>Usuario</label>
+            </div>
+            <div class="user-box">
+                <input type="password" asp-for="Pass" autocomplete="off" id="password">
+                <label>Contraseña</label>
+            </div>
+            <div class="d-flex justify-content-center">
+                <a id="btnLogin">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>                  
+                    Aceptar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal loading -->
+    <div class="loading-page-login" id="loadingPageLogin">
+        <div class="text-center" style="margin-top: 50vh;">
+            <i class="fa-solid fa-spinner fa-spin-pulse fa-2xl"></i>
+        </div>
+    </div>
+
+    <!-- ✅ load jQuery ✅ -->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <!-- ✅ load Bootstrap bundle ✅ -->
+    <script src="~/lib/popper/popper.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+
+    <!-- ✅ load custom scripts -->
+    <script src="~/js/login.js"></script>
+</body>
+</html>
